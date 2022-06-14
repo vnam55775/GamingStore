@@ -1,0 +1,72 @@
+﻿@page "/admin/gamings"
+@page "/admin"
+@inherits OwningComponentBase<IGamingStoreRepository>
+<NavLink class="btn btn-primary btn-create" href="/admin/gamings/create">Tạo mới </NavLink>
+<table class="table table-sm table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên sản phẩm</th>
+            <th>Hình ảnh</th>
+            <th>Loại sản phẩm</th>
+            <th>Giá</th>
+            <td />
+        </tr>
+    </thead>
+    <tbody>
+        @if (GamingData?.Count() > 0)
+        {
+            @foreach (Gaming b in GamingData)
+            {
+                <tr>
+                    <td>@b.GamingID</td>
+                    <td>@b.Title</td>
+                    <td><img src="@b.Description" style="width:150px; height:150px;" /></td>
+                    <td>@b.Genre</td>
+                    <td>@b.Price.ToString("c")</td>
+                    <td>
+                        <NavLink class="btn btn-info btn-sm btn-button"
+                                 href="@GetDetailsUrl(b.GamingID)">
+                            Xem
+                        </NavLink>
+                        <br />
+                        <NavLink class="btn btn-warning btn-sm btn-button"
+                                 href="@GetEditUrl(b.GamingID)">
+                            Chỉnh sửa
+                        </NavLink>
+                        <br />
+                        <button class="btn btn-danger btn-sm btn-button"
+                                @onclick="@(e => DeleteGaming(b))">
+                            Xóa
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center">Không có sản phẩm</td>
+            </tr>
+        }
+    </tbody>
+</table>
+@code {
+    public IGamingStoreRepository Repository => Service;
+    public IEnumerable<Gaming> GamingData { get; set; }
+    protected async override Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+    public async Task UpdateData()
+    {
+        GamingData = await Repository.Gamings.ToListAsync();
+    }
+    public async Task DeleteGaming(Gaming b)
+    {
+        Repository.DeleteGaming(b);
+        await UpdateData();
+    }
+    public string GetDetailsUrl(long id) => $"/admin/gamings/details/{id}";
+    public string GetEditUrl(long id) => $"/admin/gamings/edit/{id}";
+}

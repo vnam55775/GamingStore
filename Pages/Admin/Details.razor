@@ -1,0 +1,25 @@
+﻿@page "/admin/gamings/details/{id:long}"
+<h3 class="bg-info text-white text-center p-1">Thông tin sản phẩm</h3>
+<table class="table table-sm table-bordered table-striped">
+    <tbody>
+        <tr><th>ID</th><td>@Gaming.GamingID</td></tr>
+        <tr><th>Tên sản phẩm</th><td>@Gaming.Title</td></tr>
+        <tr><th>Hình ảnh</th><td><img src="@Gaming.Description" style="width:200px; height:200px;"/></td></tr>
+        <tr><th>Loại sản phẩm</th><td>@Gaming.Genre</td></tr>
+        <tr><th>Giá</th><td>@Gaming.Price.ToString("C")</td></tr>
+    </tbody>
+</table>
+<NavLink class="btn btn-warning" href="@EditUrl">Chỉnh sửa</NavLink>
+<NavLink class="btn btn-secondary" href="/admin/gamings">Trở về</NavLink>
+@code {
+    [Inject]
+    public IGamingStoreRepository Repository { get; set; }
+    [Parameter]
+    public long Id { get; set; }
+    public Gaming Gaming { get; set; }
+    protected override void OnParametersSet()
+    {
+        Gaming = Repository.Gamings.FirstOrDefault(b => b.GamingID == Id);
+    }
+    public string EditUrl => $"/admin/gamings/edit/{Gaming.GamingID}";
+}
